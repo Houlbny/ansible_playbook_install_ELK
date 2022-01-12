@@ -1,0 +1,16 @@
+---
+- hosts: ES
+  gather_facts: no
+  roles:
+    - role: init-server
+    - role: ES
+    
+- hosts: kibana
+  gather_facts: no
+  roles:
+    - role: kibana
+
+- hosts: logstash
+  gather_facts: no
+  roles:
+    - role: logstash

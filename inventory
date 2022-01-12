@@ -1,0 +1,10 @@
+[ES]
+10.228.11.126 node_name=log1
+10.228.11.127 node_name=log2
+10.228.11.128 node_name=log3
+
+[logstash]
+10.228.11.127
+
+[kibana]
+10.228.11.128
