@@ -1,0 +1,12 @@
+---
+logstash_data_path: /opt/logstash/data
+logstash_log_path: /opt/logstash/logs
+logstash_PATH: /opt/logstash
+logstash_RPM: logstash-7.0.0.rpm
+logstash_RPM_PATH: /opt/logstash/logstash-7.0.0.rpm
+
+Xms: -Xms2g
+Xmx: -Xmx2g
+
+elasticsearch_hosts: '["http://10.228.11.126:9200"]'
+elasticsearch_password: abcd1234

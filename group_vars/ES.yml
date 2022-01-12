@@ -1,0 +1,16 @@
+---
+ES_host_all: '["10.228.11.126", "10.228.11.127", "10.228.11.128"]'
+ES_PATH: /opt/elasticsearch
+ES_RPM: elasticsearch-7.16.1-x86_64.rpm
+ES_RPM_PATH: /opt/elasticsearch/elasticsearch-7.16.1-x86_64.rpm
+Xms: -Xms4g
+Xmx: -Xmx4g
+cluster_name: test-ES-cluster
+http_port: 9200
+ES_data_path: /opt/elasticsearch/data
+ES_log_path: /opt/elasticsearch/logs
+auth_leader: 10.228.11.127
+certificates_auth: qweqwd$%^rfxq
+es_passwd: abcd1234
+jdk_tar_name: jdk-8u191-linux-x64
+jdk_version: jdk1.8.0_191

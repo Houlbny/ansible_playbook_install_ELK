@@ -1,0 +1,8 @@
+---
+kibana_PATH: /opt/kibana
+kibana_RPM: kibana-7.0.0-x86_64.rpm
+kibana_RPM_PATH: /opt/kibana/kibana-7.0.0-x86_64.rpm
+server_port: 5601
+elasticsearch_hosts: '["http://10.228.11.126:9200"]'
+elasticsearch_url: '"http://10.228.11.126:9200"'
+elasticsearch_password: abcd1234
