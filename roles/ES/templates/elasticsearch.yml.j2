@@ -1,0 +1,16 @@
+cluster.name: {{ cluster_name }}
+node.name: {{ node_name }}
+cluster.initial_master_nodes: {{ ES_host_all }}
+path.data: {{ ES_data_path }}
+path.logs: {{ ES_log_path }}
+bootstrap.memory_lock: false
+bootstrap.system_call_filter: false
+network.host: {{ ansible_host }}
+http.port: {{ http_port }}
+discovery.seed_hosts: {{ ES_host_all }}
+discovery.zen.minimum_master_nodes: 2
+xpack.security.enabled: true
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.keystore.path: /etc/elasticsearch/elastic-certificates.p12
+xpack.security.transport.ssl.truststore.path: /etc/elasticsearch/elastic-certificates.p12

@@ -1,0 +1,74 @@
+---
+# tasks file for init-server
+
+- name: stop firewall
+  shell: 
+    systemctl stop firewalld;systemctl disable firewalld
+  ignore_errors: true
+
+- name: install iptables
+  yum: name = {{ item }} state=installed
+  with_items:
+    - iptables
+    - iptables-services
+
+- name: install base packages
+  yum: name = {{ item }} state=installed
+
+  with_items:
+    - gcc
+    - gcc-c++
+    - lrzsz
+    - telnet
+    - pcre
+    - pcre-devel
+    - zlib
+    - zlib-devel
+    - openssl
+    - openssl-devel
+    - net-tools
+    - unzip
+
+- name: check-java
+  shell: java -version
+  register: java_version
+  ignore_errors: true
+
+- name: copy-java
+  copy: src=files/{{ jdk_tar_name }}.tar.gz dest=/tmp/
+  when: java_version.rc != 0
+  tags: java
+
+- name: install java
+  shell: |
+    mkdir /usr/java
+    cd /usr/java
+    cp /tmp/{{ jdk_tar_name }}.tar.gz .
+    tar -zvxf {{ jdk_tar_name }}.tar.gz
+    rm -f {{ jdk_tar_name }}.tar.gz
+    rm -f /usr/bin/java
+    ln -s /usr/java/{{ jdk_version }}/bin/java /usr/bin/java
+  when: java_version.rc != 0
+  tags: java
+
+- name: set java env
+  shell: echo -e "{{ item }}" >> /etc/profile
+  with_items:
+    export JAVA_HOME=/usr/java/{{ jdk_version }}/ \n
+    export PATH=$JAVA_HOME/bin:$PATH \n
+    export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar \n
+  when: java_version.rc != 0
+  tags: java
+  
+- name: take effect
+  shell: source /etc/profile
+  when: java_version.rc != 0
+  tags: java
+
+- name: set iptables
+  shell: |
+    iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 9200 -j ACCEPT
+    iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 9300 -j ACCEPT
+    iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 5601 -j ACCEPT
+    service iptables save && systemctl restart iptables
+  tags: iptables

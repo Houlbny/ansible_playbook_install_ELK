@@ -1,0 +1,27 @@
+---
+# tasks file for logstash
+
+- name: Set logstash files
+  shell: mkdir -p {{ logstash_log_path }};mkdir -p {{ logstash_data_path }}
+
+- name: Copy logstash rpm
+  copy: src=files/{{ logstash_RPM }} dest={{ logstash_PATH }}
+
+- name: install logstash rpm
+  yum:
+    name: "{{ logstash_RPM_PATH }}"
+    state: present
+
+- name: Set JVM options
+  template: src=templates/jvm.options.j2 dest=/etc/logstash/jvm.options
+
+- name: Set logstash yml
+  template: src=templates/logstash.yml.j2 dest=/etc/logstash/logstash.yml
+
+- name: Set logstash conf
+  template: src=templates/neiqian.conf.j2 dest=/etc/logstash/conf.d/neiqian.conf
+
+- name: logstash start!
+  systemd: 
+    name: logstash
+    state: started

@@ -1,0 +1,8 @@
+path.data: {{ logstash_data_path }}
+path.config: /etc/logstash/conf.d
+config.reload.automatic: true
+path.logs: {{ logstash_log_path }}
+xpack.monitoring.enabled: true
+xpack.monitoring.elasticsearch.hosts: {{ elasticsearch_hosts }}
+xpack.monitoring.elasticsearch.username: "logstash_system"
+xpack.monitoring.elasticsearch.password: {{ elasticsearch_password }}

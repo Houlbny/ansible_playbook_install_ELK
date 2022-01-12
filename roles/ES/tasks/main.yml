@@ -1,0 +1,65 @@
+---
+# tasks file for ES
+
+- name: Set init
+  shell: yum remove -y elasticsearch;rm -rf /opt/elasticsearch;rm -rf /etc/elasticsearch
+
+- name: Set ES File
+  shell: mkdir -p {{ ES_data_path }}; mkdir -p {{ ES_log_path }}
+
+- name: Copy ES RPM
+  copy: src=files/{{ ES_RPM }} dest={{ ES_PATH }}/
+- name: install ES rpm
+  yum: 
+    name: "{{ ES_RPM_PATH }}"
+    state: present
+
+- name: Set JVM Options
+  template: src=templates/jvm.options.j2 dest=/etc/elasticsearch/jvm.options
+- name: Set elasticsearch yml
+  template: src=templates/elasticsearch.yml.j2 dest=/etc/elasticsearch/elasticsearch.yml
+
+- name: Set Certificates_auth
+  shell: |
+    rm -f /etc/elasticsearch/elastic-certificates.p12 && /usr/share/elasticsearch/bin/elasticsearch-certutil cert -out /etc/elasticsearch/elastic-certificates.p12 -pass ""
+    chmod 644 /etc/elasticsearch/elastic-certificates.p12
+  delegate_to: "{{ auth_leader }}"
+  run_once: true
+  tags: auth
+
+- name: Fetch Certificates_auth
+  fetch: src=/etc/elasticsearch/elastic-certificates.p12 dest=/tmp/elastic-certificates mode=0644
+  delegate_to: "{{ auth_leader }}"
+  run_once: true
+  tags: auth
+
+- name: Send Certificates_auth to all nodes
+  copy: src=/tmp/elastic-certificates/{{ auth_leader }}/etc/elasticsearch/elastic-certificates.p12 dest=/etc/elasticsearch/ mode=0644
+  tags: auth
+
+# - name: Send ertificates to other nodes
+#   synchronize:
+#     src: /etc/elasticsearch/elastic-certificates.p12
+#     dest: /etc/elasticsearch/elastic-certificates.p12
+#     rsync_opts:
+#       - "--chmod=F644"
+#   run_once: true
+    
+- name: change owner
+  shell: chown -R elasticsearch:elasticsearch /opt/elasticsearch
+
+- name: ES start!
+  systemd: state=started name=elasticsearch
+
+- name: Exterminate mankind
+  pause: prompt='Please confirm you want to set password mankind! Press return to continue. (IF ELK 6)Press Ctrl+c and then"a" to abort'
+
+- name: Set Es passwd-1
+  template: src=templates/es-passwd.j2 dest=/tmp/es-passwd.txt
+  run_once: true
+  tags: auth
+
+- name: Set Es passwd-2
+  shell: /usr/share/elasticsearch/bin/elasticsearch-setup-passwords interactive < /tmp/es-passwd.txt
+  run_once: true
+  tags: auth

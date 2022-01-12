@@ -1,0 +1,20 @@
+---
+# tasks file for kibana
+
+
+- name: Set kibana File
+  shell: mkdir -p /opt/kibana
+
+- name: Copy kibana RPM
+  copy: src=files/{{ kibana_RPM }} dest={{ kibana_PATH }}
+
+- name: install kibana rpm
+  yum:
+    name: "{{ kibana_RPM_PATH }}"
+    state: present
+
+- name: Set kibana conf
+  template: src=templates/kibana.yml.j2 dest=/etc/kibana/kibana.yml
+
+- name: kibana start!
+  systemd: state=started name=kibana
